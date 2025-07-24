@@ -1,0 +1,6 @@
+.venv/
+data/
+data_enrichment/checkpoint/
+data_enrichment/data/
+data_enrichment/database/IP-COUNTRY-REGION-CITY.BIN
+glamira-project-464503-a80775406a71.json

@@ -1,0 +1,6 @@
+MONGODB_URL: "mongodb://<user_name>:<password>@<external_IP_of_VM>:<mongodb_port>/"
+LOGGING:
+  level: INFO
+  log_file: logs/mainlog.log
+  to_console: true
+CREDENTIAL: glamira-project-464503-a80775406a71.json
