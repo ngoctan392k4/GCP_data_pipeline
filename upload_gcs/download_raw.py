@@ -2,7 +2,7 @@ import os
 from pymongo import MongoClient
 import json
 from tqdm import tqdm
-from yaml_config import load_config
+from upload_gcs.yaml_config import load_config
 
 config = load_config()
 

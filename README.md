@@ -158,3 +158,6 @@ Based on the given mongodb-based database with the Consumer behavior of GLAMIRA
 - `environment/config.yml`: set up environment including service account file, mongodb url,...
 - `logs/mainlog.log`: save log during running code for data_profiling, upload_gcs,...
 - `upload_gcs`: used to download raw, product and ip2location data from MongoDB, then upload into GCS
+
+# Project 7
+install dbt-core, dbt-snowflake, dbt-bigquery

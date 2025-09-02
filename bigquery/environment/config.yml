@@ -1,0 +1,4 @@
+LOGGING:
+  level: INFO
+  log_file: logs/bigquerry.log
+  to_console: true

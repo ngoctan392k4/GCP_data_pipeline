@@ -3,13 +3,13 @@ from pymongo import MongoClient
 import json
 from tqdm import tqdm
 import logging
-from yaml_config import load_config
+from upload_gcs.yaml_config import load_config
 
 config = load_config()
 
 def save_product_data_jsonl(data):
     os.makedirs("data", exist_ok=True)
-    with open("data/product_data.jsonl", "a", encoding="utf-8") as wf:
+    with open("data/product_info.jsonl", "a", encoding="utf-8") as wf:
         for doc in data:
             json.dump(doc, wf, ensure_ascii=False)
             wf.write("\n")
@@ -17,8 +17,8 @@ def save_product_data_jsonl(data):
 def download_product():
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = config["CREDENTIAL"]
     client = MongoClient(config["MONGODB_URL"], serverSelectionTimeoutMS=5)
-    database = client["countly"]
-    collection = database["product_data"]
+    database = client["glamira"]
+    collection = database["product_info"]
 
     docs = docs = collection.find({}, {"_id": 0})
     batch = []

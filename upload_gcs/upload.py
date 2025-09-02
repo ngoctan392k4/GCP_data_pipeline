@@ -1,6 +1,6 @@
 from google.cloud import storage
 import os
-from yaml_config import load_config
+from upload_gcs.yaml_config import load_config
 
 config = load_config()
 
