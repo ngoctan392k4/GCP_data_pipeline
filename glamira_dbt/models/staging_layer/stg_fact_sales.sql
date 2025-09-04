@@ -51,7 +51,7 @@ fact_sales as (
         ) AS metal_id,
 
         fsc.device_id as customer_id,
-        FARM_FINGERPRINT(fsc.ip) AS location_id,
+        fsc.ip AS ip_address,
         fsc.local_time,
         MAX(cp.amount) AS quantity,
 		-- MAX(CAST(REPLACE(REPLACE(REPLACE(REPLACE(cp.price, '\\', ''), '"', ''), "'", ''), ',', '.') AS FLOAT64)) AS price,
@@ -76,13 +76,9 @@ fact_sales as (
 		AND psa.option_type_id = CAST(opt.value_id AS STRING)
     LEFT JOIN {{ ref('exchange_rate') }} exc
 		ON cp.currency = exc.symbol
-	GROUP BY fsc.order_id, cp.product_id, date_id, fsc.store_id, fsc.device_id, fsc.local_time, cp.currency, FARM_FINGERPRINT(fsc.ip)
+	GROUP BY fsc.order_id, cp.product_id, date_id, fsc.store_id, fsc.device_id, fsc.local_time, cp.currency, fsc.ip
 )
 
 
-SELECT *,
-    CASE
-        WHEN exchange_rate_to_usd is not null THEN ROUND(quantity * price * exchange_rate_to_usd, 2)
-        ELSE ROUND(quantity*price, 2)
-    END AS total_in_usd
+SELECT *
 FROM fact_sales
