@@ -1,6 +1,7 @@
 {{ config(
-    schema='raw_glamira_analysis',
-    alias='dim_date'
+    schema='glamira_analysis',
+    alias='dim_date',
+    materialized='table'
 ) }}
 
 WITH date_source AS (

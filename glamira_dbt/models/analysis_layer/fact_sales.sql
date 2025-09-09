@@ -1,6 +1,7 @@
 {{ config(
-    schema='raw_glamira_analysis',
-    alias='fact_sales'
+    schema='glamira_analysis',
+    alias='fact_sales',
+    materialized='table'
 ) }}
 
 WITH fact_source AS (
@@ -23,6 +24,7 @@ SELECT
     fs.metal_id,
     fs.customer_id,
     sls.location_id,
+    fs.ip_address,
     fs.local_time,
     fs.quantity,
     fs.price,

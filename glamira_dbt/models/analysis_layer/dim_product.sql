@@ -1,6 +1,7 @@
 {{ config(
-    schema='raw_glamira_analysis',
-    alias='dim_product'
+    schema='glamira_analysis',
+    alias='dim_product',
+    materialized='table'
 ) }}
 
 WITH product_source AS (

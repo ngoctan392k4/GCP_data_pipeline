@@ -1,7 +1,7 @@
 glamira_dbt:
   outputs:
     dev:
-      dataset: raw_glamira_staging
+      dataset: glamira_staging
       job_execution_timeout_seconds: 300
       job_retries: 1
       keyfile: E:\workspace\glamira_project_gcp_data_pipeline\ngoctan_owner.json

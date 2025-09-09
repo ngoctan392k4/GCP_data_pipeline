@@ -1,6 +1,7 @@
 {{ config(
-    schema='raw_glamira_analysis',
-    alias='dim_metal'
+    schema='glamira_analysis',
+    alias='dim_metal',
+    materialized='table'
 ) }}
 
 WITH metal_source AS (

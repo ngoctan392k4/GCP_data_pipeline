@@ -1,6 +1,7 @@
 {{ config(
-    schema='raw_glamira_analysis',
-    alias='dim_location'
+    schema='glamira_analysis',
+    alias='dim_location',
+    materialized='table'
 ) }}
 
 WITH location_source AS (

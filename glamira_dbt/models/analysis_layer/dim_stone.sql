@@ -1,6 +1,7 @@
 {{ config(
-    schema='raw_glamira_analysis',
-    alias='dim_stone'
+    schema='glamira_analysis',
+    alias='dim_stone',
+    materialized='table'
 ) }}
 
 WITH stone_source AS (

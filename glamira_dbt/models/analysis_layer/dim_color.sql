@@ -1,6 +1,7 @@
 {{ config(
-    schema='raw_glamira_analysis',
-    alias='dim_color'
+    schema='glamira_analysis',
+    alias='dim_color',
+    materialized='table'
 ) }}
 
 WITH color_source AS (
