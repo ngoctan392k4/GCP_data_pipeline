@@ -68,8 +68,8 @@ fact_sales as (
         MAX(cp.amount) AS quantity,
 		-- MAX(CAST(REPLACE(REPLACE(REPLACE(REPLACE(cp.price, '\\', ''), '"', ''), "'", ''), ',', '.') AS FLOAT64)) AS price,
         MAX(SAFE_CAST(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(cp.price, '.', ''), ',', '.'), '\\', ''), '"', ''), "'", '') AS FLOAT64)) AS price,
-        cp.currency,
-        ANY_VALUE(CAST(exc.exchange_rate AS FLOAT64)) AS exchange_rate_to_usd,
+        COALESCE(NULLIF(cp.currency, ''), '$') AS currency,
+        COALESCE(ANY_VALUE(CAST(exc.exchange_rate AS FLOAT64)), 1) AS exchange_rate_to_usd,
 		-- MAX(cp.amount*CAST(REPLACE(REPLACE(REPLACE(REPLACE(cp.price, '\\', ''), '"', ''), "'", ''), ',', '.') AS FLOAT64)*CAST(exc.exchange_rate AS FLOAT64)) AS total_in_usd
         -- MAX(cp.amount * SAFE_CAST(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(cp.price, '.', ''), ',', '.'), '\\', ''), '"', ''), "'", '') AS FLOAT64) * ANY_VALUE(CAST(exc.exchange_rate AS FLOAT64))) AS total_in_usd
     FROM fact_sale_source AS fsc
