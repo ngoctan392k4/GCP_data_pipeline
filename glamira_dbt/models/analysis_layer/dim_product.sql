@@ -12,6 +12,7 @@ WITH product_source AS (
 
 SELECT
   ps.product_id,
+  ps.suffix,
   ps.product_name,
   ps.sku,
   ps.attribute_set_id,
@@ -24,6 +25,23 @@ SELECT
   ps.store_code,
   ps.gender
 FROM product_source ps
+
+UNION ALL
+
+SELECT
+  '-1' AS product_id,
+  'Not Defined' AS suffix,
+  'Not Defined' AS product_name,
+  'Not Defined' AS sku,
+  -1 AS attribute_set_id,
+  'Not Defined' AS type_id,
+  'Not Defined' AS min_price,
+  'Not Defined' AS max_price,
+  'Not Defined' AS collection_id,
+  'Not Defined' AS product_type_value,
+  -1 AS category,
+  '-1' AS store_code,
+  'Not Defined' AS gender
 
 -- FROM english_product_name
 
