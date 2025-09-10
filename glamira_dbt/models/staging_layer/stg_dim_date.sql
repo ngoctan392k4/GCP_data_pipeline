@@ -1,3 +1,7 @@
+{{ config(
+    materialized='table'
+) }}
+
 WITH dim_date_source AS (
     SELECT *
     FROM {{source('glamira_src', 'raw_glamira_behaviour')}}

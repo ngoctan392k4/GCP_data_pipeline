@@ -1,3 +1,7 @@
+{{ config(
+    materialized='table'
+) }}
+
 WITH english_product_name AS (
   SELECT
       product_id,
@@ -41,13 +45,75 @@ remaining_picked AS (
 )
 
 
-SELECT data.*
+SELECT
+  data.product_id,
+  data.suffix,
+  data.product_name,
+  data.sku,
+  data.attribute_set_id,
+  data.type_id,
+  data.min_price,
+  data.max_price,
+  COALESCE(NULLIF(data.collection_id, ''), 'Not Defined') AS collection_id,
+  -- CASE
+  --   WHEN data.collection_id = '-' THEN 'Not Defined'
+  --   ELSE data.collection_id
+  -- END AS collection_id,
+  data.product_type_value,
+  data.category,
+  data.store_code,
+  data.gender,
+  data.stone,
+  data.color,
+  data.alloy
 FROM english_product_name
 
 UNION ALL
-SELECT data.*
+SELECT
+  data.product_id,
+  data.suffix,
+  data.product_name,
+  data.sku,
+  data.attribute_set_id,
+  data.type_id,
+  data.min_price,
+  data.max_price,
+  COALESCE(NULLIF(data.collection_id, ''), 'Not Defined') AS collection_id,
+  -- CASE
+  --   WHEN data.collection_id = '-' THEN 'Not Defined'
+  --   ELSE data.collection_id
+  -- END AS collection_id,
+  data.product_type_value,
+  data.category,
+  data.store_code,
+  data.gender,
+  data.stone,
+  data.color,
+  data.alloy
 FROM other_latin_product_name
 
 UNION ALL
-SELECT *
-FROM remaining_picked
+SELECT
+  rp.product_id,
+  rp.suffix,
+  rp.product_name,
+  rp.sku,
+  rp.attribute_set_id,
+  rp.type_id,
+  rp.min_price,
+  rp.max_price,
+  COALESCE(NULLIF(rp.collection_id, ''), 'Not Defined') AS collection_id,
+  -- CASE
+  --   WHEN rp.collection_id = '-' THEN 'Not Defined'
+  --   ELSE rp.collection_id
+  -- END AS collection_id,
+  rp.product_type_value,
+  rp.category,
+  rp.store_code,
+  rp.gender,
+  rp.stone,
+  rp.color,
+  rp.alloy
+FROM remaining_picked rp
+
+

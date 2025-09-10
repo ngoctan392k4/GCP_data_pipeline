@@ -1,3 +1,7 @@
+{{ config(
+    materialized='table'
+) }}
+
 WITH dim_location_source AS (
     SELECT *
     FROM {{source('glamira_src', 'raw_ip_location')}}
@@ -11,3 +15,13 @@ SELECT DISTINCT
     dls.region AS region_name,
     dls.city AS city_name
 FROM dim_location_source dls
+
+UNION ALL
+
+SELECT
+    -1 AS location_id,
+    'Not Defined' AS ip_address,
+    'Not Defined' AS country_name,
+    'Not Defined' AS country_short,
+    'Not Defined' AS region_name,
+    'Not Defined' AS city_name

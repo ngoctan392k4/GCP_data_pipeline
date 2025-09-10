@@ -1,3 +1,7 @@
+{{ config(
+    materialized='table'
+) }}
+
 WITH dim_metal_source AS (
     SELECT *
     FROM {{source('glamira_src', 'raw_glamira_behaviour')}}
@@ -48,3 +52,10 @@ SELECT
     END as metal_name
 FROM dim_metal
 WHERE metal_code IS NOT NULL
+
+UNION ALL
+
+SELECT
+    -1 AS metal_id,
+    'Not Defined' AS metal_code,
+    'Not Defined' AS metal_name

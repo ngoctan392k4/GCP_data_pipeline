@@ -1,3 +1,7 @@
+{{ config(
+    materialized='table'
+) }}
+
 WITH fact_sale_source AS (
     SELECT *
     FROM {{ source('glamira_src', 'raw_glamira_behaviour') }}
@@ -13,41 +17,49 @@ product_source AS (
 fact_sales as (
     SELECT DISTINCT
         FARM_FINGERPRINT(fsc.order_id || '-' || cp.product_id) AS sale_id,
-        fsc.order_id,
+        CAST(CAST(CAST(fsc.order_id AS FLOAT64) AS INT64) AS STRING) AS order_id,
         cp.product_id,
         FORMAT_DATE('%Y%m%d', DATE(TIMESTAMP_SECONDS(fsc.time_stamp))) AS date_id,
         fsc.store_id,
 
 		-- Dù alloy hay stone thì đều có option_id và option_type_id nên cần check hash xong thì thuộc bên nào
-
-		MAX(
-            CASE
-                WHEN FARM_FINGERPRINT(opt.option_id || '-' || opt.value_id)
-                     IN (SELECT stone_id FROM {{ ref("stg_dim_stone") }})
-                THEN FARM_FINGERPRINT(opt.option_id || '-' || opt.value_id)
-            END
+        COALESCE(
+            MAX(
+                CASE
+                    WHEN FARM_FINGERPRINT(opt.option_id || '-' || opt.value_id)
+                        IN (SELECT stone_id FROM {{ ref("stg_dim_stone") }})
+                    THEN FARM_FINGERPRINT(opt.option_id || '-' || opt.value_id)
+                END
+            ),
+            -1
         ) AS stone_id,
 
-        MAX(
-            CASE
-                WHEN psc.option_id IS NOT NULL
-                    AND FARM_FINGERPRINT(psc.colour) IN (SELECT color_id FROM {{ ref("stg_dim_color") }})
-                THEN FARM_FINGERPRINT(psc.colour)
-                WHEN psa.option_id IS NOT NULL
-                    AND FARM_FINGERPRINT(psa.colour) IN (SELECT color_id FROM {{ ref("stg_dim_color") }})
-                THEN FARM_FINGERPRINT(psa.colour)
-            END
+        COALESCE(
+            MAX(
+                CASE
+                    WHEN psc.option_id IS NOT NULL
+                        AND FARM_FINGERPRINT(psc.colour) IN (SELECT color_id FROM {{ ref("stg_dim_color") }})
+                    THEN FARM_FINGERPRINT(psc.colour)
+                    WHEN psa.option_id IS NOT NULL
+                        AND FARM_FINGERPRINT(psa.colour) IN (SELECT color_id FROM {{ ref("stg_dim_color") }})
+                    THEN FARM_FINGERPRINT(psa.colour)
+                END
+            ),
+            -1
         ) AS color_id,
 
-        MAX(
-            CASE
-                WHEN psc.option_id IS NOT NULL
-                    AND FARM_FINGERPRINT(psc.metal) IN (SELECT metal_id FROM {{ ref("stg_dim_metal") }})
-                THEN FARM_FINGERPRINT(psc.metal)
-                WHEN psa.option_id IS NOT NULL
-                    AND FARM_FINGERPRINT(psa.metal) IN (SELECT metal_id FROM {{ ref("stg_dim_metal") }})
-                THEN FARM_FINGERPRINT(psa.metal)
-            END
+        COALESCE(
+            MAX(
+                CASE
+                    WHEN psc.option_id IS NOT NULL
+                        AND FARM_FINGERPRINT(psc.metal) IN (SELECT metal_id FROM {{ ref("stg_dim_metal") }})
+                    THEN FARM_FINGERPRINT(psc.metal)
+                    WHEN psa.option_id IS NOT NULL
+                        AND FARM_FINGERPRINT(psa.metal) IN (SELECT metal_id FROM {{ ref("stg_dim_metal") }})
+                    THEN FARM_FINGERPRINT(psa.metal)
+                END
+            ),
+            -1
         ) AS metal_id,
 
         fsc.device_id as customer_id,

@@ -1,3 +1,7 @@
+{{ config(
+    materialized='table'
+) }}
+
 WITH dim_color_source AS (
     SELECT *
     FROM {{source('glamira_src', 'raw_glamira_behaviour')}}
@@ -46,3 +50,10 @@ SELECT distinct
         ELSE 'Undefined'
     END as color_name
 FROM dim_color
+
+UNION ALL
+
+SELECT
+    -1 AS color_id,
+    'Not Defined' AS color_code,
+    'Not Defined' AS color_name
