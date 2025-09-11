@@ -67,7 +67,71 @@ fact_sales as (
         fsc.local_time,
         MAX(cp.amount) AS quantity,
 		-- MAX(CAST(REPLACE(REPLACE(REPLACE(REPLACE(cp.price, '\\', ''), '"', ''), "'", ''), ',', '.') AS FLOAT64)) AS price,
-        MAX(SAFE_CAST(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(cp.price, '.', ''), ',', '.'), '\\', ''), '"', ''), "'", '') AS FLOAT64)) AS price,
+        -- MAX(SAFE_CAST(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(cp.price, '.', ''), ',', '.'), '\\', ''), '"', ''), "'", '') AS FLOAT64)) AS price,
+        MAX (
+            CASE
+                WHEN cp.price LIKE '%.%,%' THEN SAFE_CAST(
+                    REPLACE(
+                        REPLACE(
+                        REPLACE(
+                            REPLACE(
+                            REPLACE(cp.price, '\\', ''),   -- bỏ backslash
+                            '"', ''                        -- bỏ double quote
+                            ),
+                            "'", ''                          -- bỏ single quote
+                        ),
+                        '.', ''                            -- bỏ dấu . ngăn nghìn
+                        ),
+                        ',', '.'                             -- đổi , thành .
+                    ) AS FLOAT64
+                )
+
+                WHEN cp.price LIKE '%,%.%' THEN SAFE_CAST(
+                    REPLACE(
+                    REPLACE(
+                        REPLACE(
+                        REPLACE(cp.price, '\\', ''),
+                        '"', ''
+                        ),
+                        "'", ''
+                    ),
+                    ',', ''                            -- bỏ dấu , ngăn nghìn
+                    ) AS FLOAT64
+                )
+
+                WHEN cp.price LIKE '%٫%' AND NOT cp.price LIKE '%.%' THEN SAFE_CAST(
+                REPLACE(
+                    REPLACE(
+                    REPLACE(cp.price, '\\', ''),
+                    '"', ''
+                    ),
+                    '٫', '.'   -- đổi dấu phẩy thành dấu chấm
+                ) AS FLOAT64
+                )
+
+                WHEN cp.price LIKE '%,%' OR cp.price LIKE '%.%' OR cp.price LIKE "%\'%.%" THEN
+                    SAFE_CAST(
+                    REGEXP_REPLACE(
+                    REGEXP_REPLACE(
+                        REPLACE(cp.price, "'", ''),
+                        r'([,\.])(\d{1,2})$', r'.\2'        -- decimal part
+                    ),
+                    r'([,\.])(\d{3})([^0-9]|$)', r'\2\3'             -- thousand part
+                    ) AS FLOAT64
+                )
+
+                ELSE SAFE_CAST(
+                    REPLACE(
+                    REPLACE(
+                        REPLACE(cp.price, '\\', ''),
+                        '"', ''
+                    ),
+                    "'", ''
+                    ) AS FLOAT64
+                )
+            END
+        ) AS price,
+        -- MAX(cp.price) as chuaxuly,
         COALESCE(NULLIF(cp.currency, ''), '$') AS currency,
         COALESCE(ANY_VALUE(CAST(exc.exchange_rate AS FLOAT64)), 1) AS exchange_rate_to_usd,
 		-- MAX(cp.amount*CAST(REPLACE(REPLACE(REPLACE(REPLACE(cp.price, '\\', ''), '"', ''), "'", ''), ',', '.') AS FLOAT64)*CAST(exc.exchange_rate AS FLOAT64)) AS total_in_usd

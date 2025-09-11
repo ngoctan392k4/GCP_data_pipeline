@@ -10,10 +10,10 @@ WITH dim_location_source AS (
 SELECT DISTINCT
     FARM_FINGERPRINT(dls.country || dls.region || dls.city) AS location_id,
     dls.ip AS ip_address,
-    dls.country AS country_name,
-    dls.country_short AS country_short,
-    dls.region AS region_name,
-    dls.city AS city_name
+    COALESCE(NULLIF(dls.country, '-'), 'Not Defined') AS country_name,
+    COALESCE(NULLIF(dls.country_short, '-'), 'Not Defined') AS country_short,
+    COALESCE(NULLIF(dls.region, '-'), 'Not Defined') AS region_name,
+    COALESCE(NULLIF(dls.city, '-'), 'Not Defined') AS city_name
 FROM dim_location_source dls
 
 UNION ALL
